@@ -1,27 +1,24 @@
-import { GoogleGenAI } from "@google/genai";
-
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY as string });
-
 export interface TranscriptionResponse {
   text: string;
 }
 
 export async function transcribeAudio(base64Audio: string, mimeType: string): Promise<string> {
-  const model = "gemini-3-flash-preview";
-  
-  const prompt = "Please transcribe this audio file accurately. Return only the transcription text, nothing else. If there is no speech, say 'No speech detected'.";
-  
-  const audioPart = {
-    inlineData: {
-      data: base64Audio,
-      mimeType: mimeType
-    }
-  };
-
-  const response = await ai.models.generateContent({
-    model: model,
-    contents: { parts: [audioPart, { text: prompt }] },
+  const response = await fetch("/api/transcribe", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      audio: base64Audio,
+      mimeType: mimeType,
+    }),
   });
 
-  return response.text || "Transcription failed or was empty.";
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || "Server transcription failed");
+  }
+
+  const data: TranscriptionResponse = await response.json();
+  return data.text || "Transcription failed or was empty.";
 }

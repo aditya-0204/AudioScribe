@@ -22,7 +22,11 @@ export function Login() {
         await signInWithEmailAndPassword(auth, email, password);
       }
     } catch (err: any) {
-      setError(err.message || 'Authentication failed');
+      let message = err.message || 'Authentication failed';
+      if (message.includes('auth/operation-not-allowed')) {
+        message = 'Critical: Email/Password login is not enabled in your Firebase Console. Go to Authentication > Sign-in method to enable it.';
+      }
+      setError(message);
     } finally {
       setLoading(false);
     }
