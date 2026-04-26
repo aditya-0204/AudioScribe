@@ -1,0 +1,23 @@
+{
+  "entities": {
+    "transcript": {
+      "title": "Transcript",
+      "description": "A transcribed audio snippet with metadata.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "text": { "type": "string" },
+        "fileName": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "adminId": { "type": "string" }
+      },
+      "required": ["text", "fileName", "createdAt", "adminId"]
+    }
+  },
+  "firestore": {
+    "transcripts": {
+      "schema": "transcript",
+      "description": "Collection of all transcriptions created by admins."
+    }
+  }
+}

@@ -1,0 +1,32 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(data) {
+      return isSignedIn() && request.auth.uid == data.adminId;
+    }
+
+    function isValidTranscript(data) {
+      return data.text is string && data.text.size() <= 100000 &&
+             data.fileName is string && data.fileName.size() <= 255 &&
+             data.adminId == request.auth.uid &&
+             data.createdAt == request.time;
+    }
+
+    match /transcripts/{transcriptId} {
+      allow read: if isSignedIn() && resource.data.adminId == request.auth.uid;
+      allow create: if isSignedIn() && isValidTranscript(request.resource.data);
+      allow delete: if isSignedIn() && resource.data.adminId == request.auth.uid;
+      // Update not needed for this app's core flow
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "AudioTranscribe Admin",
+  "description": "An admin dashboard for uploading audio files and transcribing them using Gemini AI, with secure storage and history management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
