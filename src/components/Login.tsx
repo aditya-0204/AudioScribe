@@ -16,15 +16,17 @@ export function Login() {
     setLoading(true);
     setError(null);
     try {
+      // Map username to internal format for Firebase
+      const internalEmail = `${email.trim().split('@')[0]}@archive.node`;
       if (isRegistering) {
-        await createUserWithEmailAndPassword(auth, email, password);
+        await createUserWithEmailAndPassword(auth, internalEmail, password);
       } else {
-        await signInWithEmailAndPassword(auth, email, password);
+        await signInWithEmailAndPassword(auth, internalEmail, password);
       }
     } catch (err: any) {
       let message = err.message || 'Authentication failed';
       if (message.includes('auth/operation-not-allowed')) {
-        message = 'Critical: Email/Password login is not enabled in your Firebase Console. Go to Authentication > Sign-in method to enable it.';
+        message = 'Critical: Email/Password login is not enabled in Firebase. Enable it in Console > Auth > Sign-in method.';
       }
       setError(message);
     } finally {
@@ -34,45 +36,47 @@ export function Login() {
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4 bg-neutral-950">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-500/5 via-transparent to-transparent opacity-50"></div>
+      
       <motion.div 
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="w-full max-w-md border border-neutral-800 bg-neutral-900 p-8 rounded-3xl shadow-2xl"
+        className="relative z-10 w-full max-w-md border border-neutral-800 bg-neutral-900/50 backdrop-blur-xl p-10 rounded-[2.5rem] shadow-2xl"
       >
-        <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-600 shadow-lg shadow-indigo-500/20">
-            <Lock className="h-6 w-6 text-white" />
+        <div className="mb-10 text-center">
+          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-600 shadow-xl shadow-indigo-500/20 ring-1 ring-white/20">
+            <Lock className="h-7 w-7 text-white" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-white">ScribeAdmin</h1>
-          <p className="mt-1 text-xs uppercase tracking-widest text-neutral-500">Security Node Access</p>
+          <h1 className="text-3xl font-bold tracking-tight text-white mb-1">ScribeAdmin</h1>
+          <p className="text-[10px] uppercase font-bold tracking-[0.3em] text-neutral-500">Security Node Access // v1.2</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-1.5">
-            <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 ml-1">Email Address</label>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 ml-1">Username / Admin ID</label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-600" />
+              <Mail className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-600" />
               <input
-                type="email"
+                type="text"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-xl border border-neutral-800 bg-neutral-950 py-3 pl-10 pr-4 text-sm text-white outline-none transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-                placeholder="admin@example.com"
+                className="w-full rounded-2xl border border-neutral-800 bg-neutral-950/50 py-4 pl-12 pr-4 text-sm text-white outline-none transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/50"
+                placeholder="admin"
               />
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 ml-1">Password</label>
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 ml-1">Archive Code</label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-600" />
+              <Lock className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-600" />
               <input
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-xl border border-neutral-800 bg-neutral-950 py-3 pl-10 pr-4 text-sm text-white outline-none transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-2xl border border-neutral-800 bg-neutral-950/50 py-4 pl-12 pr-4 text-sm text-white outline-none transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/50"
                 placeholder="••••••••"
               />
             </div>
